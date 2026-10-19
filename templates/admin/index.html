@@ -1,0 +1,52 @@
+{% extends 'admin/base.html' %}
+
+{% load i18n unfold %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="flex flex-col gap-6">
+        {# 1. Cards #}
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {% for card in cards %}
+                {% component "unfold/components/card.html" with icon=card.icon %}
+                    {% component "unfold/components/text.html" %}
+                        {{ card.title }}
+                    {% endcomponent %}
+
+                    {% component "unfold/components/title.html" %}
+                        {{ card.value }}
+                    {% endcomponent %}
+                {% endcomponent %}
+            {% endfor %}
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            {# 2. Bar chart #}
+            <div class="xl:col-span-2 flex">
+                {% component "unfold/components/card.html" with title="Posts per category" %}
+                    {% component "unfold/components/chart/bar.html" with data=posts_chart height=320 %}{% endcomponent %}
+                {% endcomponent %}
+            </div>
+
+            {# 4. Progress bars #}
+            <div class="flex">
+                {% component "unfold/components/card.html" with title="Published vs drafts" %}
+                    <div class="flex flex-col gap-6">
+                        {% component "unfold/components/progress.html" with title="Published" description=published_percent|add:"%" value=published_percent %}{% endcomponent %}
+                        {% component "unfold/components/progress.html" with title="Drafts" description=draft_percent|add:"%" value=draft_percent %}{% endcomponent %}
+                    </div>
+                {% endcomponent %}
+            </div>
+        </div>
+
+        {# 3. Top authors table #}
+        {% component "unfold/components/card.html" with title="Top 5 authors" %}
+            {% component "unfold/components/table.html" with table=top_authors_table card_included=1 striped=1 %}{% endcomponent %}
+        {% endcomponent %}
+    </div>
+{% endblock %}
